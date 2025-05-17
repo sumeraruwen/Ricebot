@@ -13,6 +13,7 @@ import TermsOfService from '../screens/TermsOfService';
 import PrivacyPolicy from '../screens/PrivacyPolicy';
 import ContactUs from '../screens/ContactUs';
 import Profile from '../screens/Profile';
+import Settings from '../screens/Settings';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ const AppNavigator = () => {
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
         <Stack.Screen name="ContactUs" component={ContactUs} />
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Settings" component={Settings} />
       </Stack.Navigator>
     </NavigationContainer>
   );

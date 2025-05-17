@@ -92,7 +92,7 @@ const Home = ({ navigation, route }) => {
               <View style={styles.menuRow}>
                 <TouchableOpacity 
                   style={styles.menuItemContainer}
-                  onPress={() => navigation.navigate('Profile')}
+                  onPress={() => navigation.navigate('Settings')}
                 >
                   <View style={styles.menuItem}>
                     <Image source={require('../assets/settings.png')} style={styles.menuIcon} />
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     height: 70,
   },
   menuButton: {
-    padding: 5,
+    padding: 10,
   },
   menuIcon: {
     color: '#FFFFFF',
@@ -209,9 +209,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   riceCooker: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
+    width: 300,
+    height: 320,
+    marginBottom: 30,
   },
   menuItem: {
     backgroundColor: '#178ea3',
