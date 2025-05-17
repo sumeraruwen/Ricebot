@@ -73,7 +73,7 @@ const Settings = ({ navigation }) => {
           />
         </View>
 
-        <View style={styles.modeToggleContainer}>
+        {/* <View style={styles.modeToggleContainer}>
           <TouchableOpacity 
             style={[styles.modeButton, !isDarkMode && styles.activeMode]}
             onPress={() => setIsDarkMode(false)}
@@ -90,7 +90,7 @@ const Settings = ({ navigation }) => {
               Dark Mode
             </Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <TouchableOpacity 
           style={styles.profileButton}
