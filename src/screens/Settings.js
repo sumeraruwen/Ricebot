@@ -104,7 +104,7 @@ const Settings = ({ navigation }) => {
           <Text style={styles.arrowIcon}>→</Text>
         </TouchableOpacity>
       </ScrollView>
-      <View style={styles.footer}>
+      {/* <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('TermsOfService')}>
           <Text style={styles.footerText}>Term of Service</Text>
         </TouchableOpacity>
@@ -114,7 +114,7 @@ const Settings = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('ContactUs')}>
           <Text style={styles.footerText}>Contact Us</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };
@@ -250,6 +250,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#178ea3',
     padding: 16,
     borderRadius: 25,
+    marginBottom:50
+    
   },
   profileIcon: {
     width: 24,
@@ -294,18 +296,18 @@ const styles = StyleSheet.create({
     height: 24,
     tintColor: '#FFFFFF',
   },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
-    backgroundColor: '#096171',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
-  footerText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-  },
+//   footer: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     padding: 20,
+//     backgroundColor: '#096171',
+//     borderTopLeftRadius: 16,
+//     borderTopRightRadius: 16,
+//   },
+//   footerText: {
+//     color: '#FFFFFF',
+//     fontSize: 14,
+//   },
 });
 
 export default Settings;
