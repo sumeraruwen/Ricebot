@@ -35,7 +35,11 @@ const Home = ({ navigation, route }) => {
             />
           </View>
           <TouchableOpacity style={styles.menuButton}>
-            <Text style={styles.menuIcon}>☰</Text>
+            <Image 
+              source={require('../assets/menu.png')}
+              style={styles.headerMenuIcon}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
         </View>
 
@@ -198,8 +202,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   menuIcon: {
-    color: '#FFFFFF',
-    fontSize: 32,  // Increased from 24 to 32
+    width: 24,
+    height: 24,
+    tintColor: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
@@ -280,10 +285,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginBottom: 20,
   },
-  menuIcon: {
+  headerMenuIcon: {  // New specific style for header menu icon
+    width: 24,
+    height: 24,
+    tintColor: '#FFFFFF',
+  },
+  gridMenuIcon: {  // Renamed style for grid menu icons
     width: 30,
     height: 30,
     tintColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    transform: [{ scale: 0.9 }],
   },
   buttonContainer: {
     width: '100%',

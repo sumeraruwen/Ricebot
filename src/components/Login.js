@@ -6,16 +6,49 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import auth from '@react-native-firebase/auth';
 
 function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // For now, we'll just navigate to Home
-    navigation.navigate('Home', { userName: 'user' });
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const userCredential = await auth().signInWithEmailAndPassword(email, password);
+      const userName = userCredential.user.displayName || 'User';
+      navigation.navigate('Home', { userName });
+    } catch (error) {
+      let errorMessage = 'Login failed';
+      switch (error.code) {
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        case 'auth/user-disabled':
+          errorMessage = 'User account has been disabled';
+          break;
+        case 'auth/user-not-found':
+          errorMessage = 'User not found';
+          break;
+        case 'auth/wrong-password':
+          errorMessage = 'Invalid password';
+          break;
+        default:
+          errorMessage = error.message;
+      }
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,8 +87,14 @@ function Login({ navigation }) {
             />
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
+          <TouchableOpacity 
+            style={[styles.button, loading && styles.disabledButton]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? 'Logging in...' : 'Login'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -128,6 +167,9 @@ const styles = StyleSheet.create({
   linkText: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  disabledButton: {
+    backgroundColor: '#cccccc',
   },
 });
 

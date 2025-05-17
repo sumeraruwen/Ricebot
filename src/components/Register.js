@@ -6,18 +6,64 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import auth from '@react-native-firebase/auth';
 
 function Register({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
-    // Here you would typically handle the registration process
-    // For now, we'll just navigate to Home with the user's name
-    navigation.navigate('Home', { userName: name });
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Create user with email and password
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      
+      // Update user profile with name
+      await userCredential.user.updateProfile({
+        displayName: name,
+      });
+
+      // Show success alert and navigate to Login
+      Alert.alert(
+        'Success',
+        'Registration successful! Please login with your credentials.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Login')
+          }
+        ]
+      );
+      
+    } catch (error) {
+      let errorMessage = 'Registration failed';
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'Email address is already in use';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Password is too weak';
+          break;
+        default:
+          errorMessage = error.message;
+      }
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,8 +113,14 @@ function Register({ navigation }) {
             />
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Register</Text>
+          <TouchableOpacity 
+            style={[styles.button, loading && styles.disabledButton]}
+            onPress={handleRegister}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? 'Registering...' : 'Register'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -141,6 +193,9 @@ const styles = StyleSheet.create({
   linkText: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  disabledButton: {
+    backgroundColor: '#cccccc',
   },
 });
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "578135031568",
+    "project_id": "ricebot-c9268",
+    "storage_bucket": "ricebot-c9268.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578135031568:android:fb11cf06a031197a2c2f95",
+        "android_client_info": {
+          "package_name": "com.ricebot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWdHIb5WIpayhd85LBIRzbptIPzBr-DzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
