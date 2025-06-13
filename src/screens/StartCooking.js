@@ -8,6 +8,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
+import Alerts from '../components/Alerts';
 
 const StartCooking = ({ navigation }) => {
   const [selectedQuantity, setSelectedQuantity] = useState('1 Cup');
@@ -30,8 +31,49 @@ const StartCooking = ({ navigation }) => {
     }
   };
 
+  const [showAlerts, setShowAlerts] = useState(false);
+  const [alerts, setAlerts] = useState([
+    {
+      type: 'warning',
+      title: 'Your Rice Level Is Low',
+      message: 'Check Device\'s Internet',
+    }
+]);
+
+  // Add this before the return statement
+  const [isDataConnected, setIsDataConnected] = useState(true); // Add this state
+
+  // Remove the isDataConnected state and its button
+  const handleStartCooking = () => {
+    setAlerts([
+      {
+        type: 'success',
+        title: 'Your Rice Is Ready',
+        message: 'View Rice Status',
+        onView: () => navigation.navigate('CookingStatus'),
+      }
+    ]);
+    setShowAlerts(true);
+  };
+  
+  // In the JSX, remove this button:
+  // <TouchableOpacity 
+  //   style={[styles.startButton, { marginTop: 10 }]}
+  //   onPress={() => setIsDataConnected(!isDataConnected)}
+  // >
+  //   <Text style={styles.buttonText}>
+  //     {isDataConnected ? 'Simulate Offline' : 'Simulate Online'}
+  //   </Text>
+  // </TouchableOpacity>
+  
   return (
     <SafeAreaView style={styles.container}>
+      <Alerts
+        visible={showAlerts}
+        alerts={alerts}
+        onClose={() => setShowAlerts(false)}
+      />
+      
       <View style={styles.header}>
         <Image
           source={require('../assets/robot-logo.png')}
@@ -96,7 +138,7 @@ const StartCooking = ({ navigation }) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
             style={styles.startButton}
-            onPress={() => {/* Add cooking start logic */}}
+            onPress={handleStartCooking}
           >
             <Text style={styles.buttonText}>Start Cooking</Text>
           </TouchableOpacity>
@@ -107,6 +149,16 @@ const StartCooking = ({ navigation }) => {
           >
             <Text style={[styles.buttonText, styles.historyButtonText]}>Cancel</Text>
           </TouchableOpacity>
+          
+          // Add this near your other buttons
+          {/* <TouchableOpacity 
+            style={[styles.startButton, { marginTop: 10 }]}
+            onPress={() => setIsDataConnected(!isDataConnected)}
+          >
+            <Text style={styles.buttonText}>
+              {isDataConnected ? 'Simulate Offline' : 'Simulate Online'}
+            </Text>
+          </TouchableOpacity> */}
         </View>
       </View>
 
