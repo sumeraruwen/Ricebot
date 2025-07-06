@@ -9,7 +9,6 @@ import {
   Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import auth from '@react-native-firebase/auth';
 
 function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -24,28 +23,27 @@ function Login({ navigation }) {
 
     try {
       setLoading(true);
-      const userCredential = await auth().signInWithEmailAndPassword(email, password);
-      const userName = userCredential.user.displayName || 'User';
-      navigation.navigate('Home', { userName });
-    } catch (error) {
-      let errorMessage = 'Login failed';
-      switch (error.code) {
-        case 'auth/invalid-email':
-          errorMessage = 'Invalid email address';
-          break;
-        case 'auth/user-disabled':
-          errorMessage = 'User account has been disabled';
-          break;
-        case 'auth/user-not-found':
-          errorMessage = 'User not found';
-          break;
-        case 'auth/wrong-password':
-          errorMessage = 'Invalid password';
-          break;
-        default:
-          errorMessage = error.message;
+
+      const response = await fetch('https://rice-cooker-back-end.onrender.com/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
       }
-      Alert.alert('Error', errorMessage);
+
+     
+      const userName = data.userName || 'User';
+      navigation.navigate('Home', { userName });
+
+    } catch (error) {
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }

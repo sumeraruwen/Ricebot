@@ -47,7 +47,7 @@ const StartCooking = ({ navigation }) => {
   const handleStartCooking = () => {
     setAlerts([
       {
-        type: 'success',
+        type: 'warning',
         title: 'Your Rice Is Ready',
         message: 'View Rice Status',
         onView: () => navigation.navigate('CookingStatus'),

@@ -9,7 +9,6 @@ import {
   Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import auth from '@react-native-firebase/auth';
 
 function Register({ navigation }) {
   const [name, setName] = useState('');
@@ -25,15 +24,26 @@ function Register({ navigation }) {
 
     try {
       setLoading(true);
-      // Create user with email and password
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-      
-      // Update user profile with name
-      await userCredential.user.updateProfile({
-        displayName: name,
+
+      const response = await fetch('https://rice-cooker-back-end.onrender.com/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: name, 
+          email,
+          password,
+        }),
       });
 
-      // Show success alert and navigate to Login
+      const data = await response.json();
+      console.log('SERVER RESPONSE:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
       Alert.alert(
         'Success',
         'Registration successful! Please login with your credentials.',
@@ -44,23 +54,10 @@ function Register({ navigation }) {
           }
         ]
       );
-      
+
     } catch (error) {
-      let errorMessage = 'Registration failed';
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          errorMessage = 'Email address is already in use';
-          break;
-        case 'auth/invalid-email':
-          errorMessage = 'Invalid email address';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'Password is too weak';
-          break;
-        default:
-          errorMessage = error.message;
-      }
-      Alert.alert('Error', errorMessage);
+      console.log('ERROR:', error);
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }
