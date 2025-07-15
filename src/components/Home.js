@@ -1,16 +1,175 @@
+// import React from 'react';
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   TouchableOpacity,
+//   SafeAreaView,
+//   Image,
+//   ScrollView,
+//   TextInput,
+// } from 'react-native';
+
+// const Home = ({ navigation, route }) => {
+//   const userName = route.params?.userName || 'User';
+
+//   return (
+//     <View style={styles.container}>
+//       <SafeAreaView style={styles.safeArea}>
+//         <View style={styles.header}>
+//           <Image
+//             source={require('../assets/robot-logo.png')}
+//             style={styles.logo}
+//             resizeMode="contain"
+//           />
+//           <View style={styles.searchContainer}>
+//             <Image
+//               source={require('../assets/search.png')}
+//               style={styles.searchIcon}
+//               resizeMode="contain"
+//             />
+//             <TextInput
+//               style={styles.searchInput}
+//               placeholder="Search"
+//               placeholderTextColor="#FFFFFF"
+//             />
+//           </View>
+//           <TouchableOpacity style={styles.menuButton}>
+//             <Image 
+//               source={require('../assets/menu.png')}
+//               style={styles.headerMenuIcon}
+//               resizeMode="contain"
+//             />
+//           </TouchableOpacity>
+//         </View>
+
+//         <ScrollView style={styles.scrollView}>
+//           <View style={styles.content}>
+//             <Image
+//               source={require('../assets/rice-cooker.png')}
+//               style={styles.riceCooker}
+//               resizeMode="contain"
+//             />
+
+//             <View style={styles.welcomeContainer}>
+//               <Text style={styles.welcomeText}>Welcome {userName}!</Text>
+//             </View>
+
+//             <View style={styles.statusContainer}>
+//               <Text style={styles.statusText}>Your Current Rice cooking State is:</Text>
+//               <Text style={styles.percentage}>60%</Text>
+//             </View>
+
+//             <View style={styles.menuGrid}>
+//               <View style={styles.menuRow}>
+//                 <TouchableOpacity 
+//                   style={styles.menuItemContainer}
+//                   onPress={() => navigation.navigate('StartCooking')}
+//                 >
+//                   <View style={styles.menuItem}>
+//                     <Image source={require('../assets/cooking.png')} style={styles.menuIcon} />
+//                   </View>
+//                   <Text style={styles.menuLabel}>Cooking</Text>
+//                 </TouchableOpacity>
+                
+//                 <TouchableOpacity 
+//                   style={styles.menuItemContainer}
+//                   onPress={() => navigation.navigate('CookingStatus')}
+//                 >
+//                   <View style={styles.menuItem}>
+//                     <Image source={require('../assets/eye.png')} style={styles.menuIcon} />
+//                   </View>
+//                   <Text style={styles.menuLabel}>Status</Text>
+//                 </TouchableOpacity>
+                
+//                 <TouchableOpacity 
+//                   style={styles.menuItemContainer}
+//                   onPress={() => navigation.navigate('CookingHistory')}
+//                 >
+//                   <View style={styles.menuItem}>
+//                     <Image source={require('../assets/history.png')} style={styles.menuIcon} />
+//                   </View>
+//                   <Text style={styles.menuLabel}>History</Text>
+//                 </TouchableOpacity>
+//               </View>
+              
+//               <View style={styles.menuRow}>
+//                 <TouchableOpacity 
+//                   style={styles.menuItemContainer}
+//                   onPress={() => navigation.navigate('Settings')}
+//                 >
+//                   <View style={styles.menuItem}>
+//                     <Image source={require('../assets/settings.png')} style={styles.menuIcon} />
+//                   </View>
+//                   <Text style={styles.menuLabel}>Settings</Text>
+//                 </TouchableOpacity>
+                
+//                 <TouchableOpacity 
+//                   style={styles.menuItemContainer}
+//                   onPress={() => navigation.navigate('Profile')}
+//                 >
+//                   <View style={styles.menuItem}>
+//                     <Image source={require('../assets/profile.png')} style={styles.menuIcon} />
+//                   </View>
+//                   <Text style={styles.menuLabel}>Profile</Text>
+//                 </TouchableOpacity>
+                
+//                 <TouchableOpacity style={styles.menuItemContainer}>
+//                   <View style={styles.menuItem}>
+//                     <Image source={require('../assets/chat.png')} style={styles.menuIcon} />
+//                   </View>
+//                   <Text style={styles.menuLabel}>Chat</Text>
+//                 </TouchableOpacity>
+//               </View>
+//             </View>
+
+//             <View style={styles.buttonContainer}>
+//               <TouchableOpacity 
+//                 style={styles.button}
+//                 onPress={() => navigation.navigate('StartCooking')}
+//               >
+//                 <Text style={styles.buttonText}>Start Cooking</Text>
+//               </TouchableOpacity>
+//               <TouchableOpacity 
+//                 style={[styles.button, styles.historyButton]}
+//                 onPress={() => navigation.navigate('CookingHistory')}
+//               >
+//                 <Text style={[styles.buttonText, styles.historyButtonText]}>Cooking History</Text>
+//               </TouchableOpacity>
+//             </View>
+//           </View>
+//         </ScrollView>
+
+//         <View style={styles.footer}>
+//           <TouchableOpacity onPress={() => navigation.navigate('TermsOfService')}>
+//             <Text style={styles.footerText}>Term of Service</Text>
+//           </TouchableOpacity>
+//           <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicy')}>
+//             <Text style={styles.footerText}>Privacy policy</Text>
+//           </TouchableOpacity>
+//           <TouchableOpacity onPress={() => navigation.navigate('ContactUs')}>
+//             <Text style={styles.footerText}>Contact Us</Text>
+//           </TouchableOpacity>
+//         </View>
+//       </SafeAreaView>
+//     </View>
+//   );
+// };
+
 import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  StyleSheet,
   Image,
   ScrollView,
   TextInput,
 } from 'react-native';
 
 const Home = ({ navigation, route }) => {
+  // Get userName from route params, fallback to 'User'
   const userName = route.params?.userName || 'User';
 
   return (
@@ -106,7 +265,7 @@ const Home = ({ navigation, route }) => {
                 
                 <TouchableOpacity 
                   style={styles.menuItemContainer}
-                  onPress={() => navigation.navigate('Profile')}
+                  onPress={() => navigation.navigate('Profile', { token: route.params?.token})}
                 >
                   <View style={styles.menuItem}>
                     <Image source={require('../assets/profile.png')} style={styles.menuIcon} />
@@ -155,6 +314,7 @@ const Home = ({ navigation, route }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
