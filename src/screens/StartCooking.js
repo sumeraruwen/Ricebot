@@ -677,25 +677,25 @@ const StartCooking = ({ navigation }) => {
   const getEstimatedTime = (quantity) => {
     switch(quantity) {
       case '1 Cup': return '30min';
-      case '2 Cup': return '45min';
-      case '5 Cup': return '55min';
+      case '1.5 Cup': return '45min';
+      case '2 Cup': return '55min';
       default: return '30min';
     }
   };
 
   const toggleQuantity = () => {
     switch(selectedQuantity) {
-      case '1 Cup': return '2 Cup';
-      case '2 Cup': return '5 Cup';
-      case '5 Cup': return '1 Cup';
+      case '1 Cup': return '1.5 Cup';
+      case '1.5 Cup': return '2 Cup';
+      case '2 Cup': return '1 Cup';
       default: return '1 Cup';
     }
   };
 
   const handleStartCooking = async () => {
     let rice_quantity = 1;
-    if (selectedQuantity === '2 Cup') rice_quantity = 2;
-    if (selectedQuantity === '5 Cup') rice_quantity = 5;
+    if (selectedQuantity === '1.5 Cup') rice_quantity = 2;
+    if (selectedQuantity === '2 Cup') rice_quantity = 5;
 
     const now = moment();
     const payload = {
@@ -801,11 +801,11 @@ const StartCooking = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.mlSection}>
+        {/* <View style={styles.mlSection}>
           <Text style={styles.mlText}>
             Machine learning model shows the ungrammed quantity of rice
           </Text>
-        </View>
+        </View> */}
 
         <View style={styles.estimatedSection}>
           <Text style={styles.estimatedTime}>
