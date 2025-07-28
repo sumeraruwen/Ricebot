@@ -1,75 +1,53 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Button, Alert } from 'react-native';
-import MQTTConnection from './MQTTConnection';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { MQTTProvider } from './context/MQTTContext';
+
+// Import your screens
+import SplashScreen from './screens/SplashScreen';
+import Welcome from './components/Welcome';
+import Login from './components/Login';
+import Register from './components/Register';
+import Home from './components/Home';
+import Settings from './screens/Settings';
+import Profile from './screens/Profile';
+import CookingHistory from './screens/CookingHistory';
+import CookingStatus from './screens/CookingStatus';
+import StartCooking from './screens/StartCooking';
+import ContactUs from './screens/ContactUs';
+import PrivacyPolicy from './screens/PrivacyPolicy';
+import TermsOfService from './screens/TermsOfService';
+import MQTTTestScreen from './screens/MQTTTestScreen';
+
+const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const [connectionStatus, setConnectionStatus] = useState('Disconnected');
-  const [receivedMessage, setReceivedMessage] = useState('');
-  const mqttClientRef = useRef(null);
-
-  const mqtt_sub_topic = 'ricecooker/command';
-  const mqtt_pub_topic = 'ricecooker/status';
-
-  useEffect(() => {
-    const handleMessageReceived = (message) => {
-      console.log('Received message in App.js:', message);
-      setReceivedMessage(message);
-    };
-
-    // Create a new MQTTConnection instance
-    mqttClientRef.current = new MQTTConnection(
-      'react-native-app-client-' + Math.random().toString(16).substr(2, 8),
-      handleMessageReceived
-    );
-
-    const client = mqttClientRef.current.client;
-
-    client.on('connect', () => {
-      console.log('MQTT connection successful');
-      setConnectionStatus('Connected');
-      Alert.alert('MQTT Connection', 'Connected to MQTT Broker!');
-      
-      mqttClientRef.current.subscribe(mqtt_sub_topic);
-      mqttClientRef.current.publish(mqtt_pub_topic, 'React Native App Connected');
-    });
-
-    client.on('error', (error) => {
-      console.error('MQTT connection error:', error);
-      setConnectionStatus('Connection failed');
-      Alert.alert('MQTT Connection', 'Failed to connect to the MQTT Broker!');
-    });
-
-    client.on('close', () => {
-      console.log('MQTT connection closed');
-      setConnectionStatus('Disconnected');
-    });
-
-    return () => {
-      if (mqttClientRef.current) {
-        mqttClientRef.current.disconnect();
-        console.log('MQTT client disconnected');
-      }
-    };
-  }, []);
-
-  const handleReconnect = () => {
-    if (mqttClientRef.current && connectionStatus === 'Disconnected') {
-      console.log('Attempting to reconnect...');
-      setConnectionStatus('Reconnecting...');
-      mqttClientRef.current.client.reconnect();
-    }
-  };
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Status: {connectionStatus}</Text>
-      <Text>Last Received Message: {receivedMessage}</Text>
-      <Button
-        title="Reconnect to MQTT"
-        onPress={handleReconnect}
-        disabled={connectionStatus === 'Connected'}
-      />
-    </View>
+    <MQTTProvider>
+      <NavigationContainer>
+        <Stack.Navigator 
+          initialRouteName="SplashScreen"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen name="Welcome" component={Welcome} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Settings" component={Settings} />
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="CookingHistory" component={CookingHistory} />
+          <Stack.Screen name="CookingStatus" component={CookingStatus} />
+          <Stack.Screen name="StartCooking" component={StartCooking} />
+          <Stack.Screen name="ContactUs" component={ContactUs} />
+          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+          <Stack.Screen name="TermsOfService" component={TermsOfService} />
+          <Stack.Screen name="MQTTTestScreen" component={MQTTTestScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </MQTTProvider>
   );
 };
 

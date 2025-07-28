@@ -8,12 +8,65 @@ import {
   SafeAreaView,
   Image,
   ScrollView,
+  Alert,
 } from 'react-native';
+import { useMQTT } from '../context/MQTTContext';
 
 const Settings = ({ navigation }) => {
   const [serialNumber, setSerialNumber] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [mqttStatus, setMqttStatus] = useState('Not Connected');  // MQTT state
+  
+  // Use MQTT context for real-time connection status
+  const { connectionStatus, reconnect, disconnect, publishMessage, mqtt_pub_topic } = useMQTT();
+
+  const handleReconnect = () => {
+    Alert.alert(
+      'MQTT Reconnection',
+      'Attempting to reconnect to MQTT broker...',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Reconnect',
+          onPress: () => {
+            reconnect();
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDisconnect = () => {
+    Alert.alert(
+      'MQTT Disconnection',
+      'Are you sure you want to disconnect from MQTT broker?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Disconnect',
+          onPress: () => {
+            disconnect();
+          },
+        },
+      ]
+    );
+  };
+
+  const testConnection = () => {
+    const testMessage = `Test message from RiceBot app at ${new Date().toLocaleTimeString()}`;
+    const success = publishMessage(mqtt_pub_topic, testMessage);
+    
+    if (success) {
+      Alert.alert('Test Message', 'Test message sent successfully!');
+    } else {
+      Alert.alert('Test Message', 'Failed to send test message. Please check connection.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,12 +106,46 @@ const Settings = ({ navigation }) => {
           <Text style={styles.connectionText}>MQTT Connection Status: </Text>
 
           <View style={styles.connectionStatusContainer}>
-            <Text style={[styles.connectionStatus, mqttStatus === 'Connected' ? styles.connected : styles.disconnected]}>
-              {mqttStatus === 'Connected' ? 'Connected' : 'Not Connected'}
+            <Text style={[styles.connectionStatus, connectionStatus === 'Connected' ? styles.connected : styles.disconnected]}>
+              {connectionStatus}
             </Text>
 
-            <View style={[styles.circle, mqttStatus === 'Connected' ? styles.connectedCircle : styles.disconnectedCircle]} />
+            <View style={[styles.circle, connectionStatus === 'Connected' ? styles.connectedCircle : styles.disconnectedCircle]} />
           </View>
+
+          {/* MQTT Control Buttons */}
+          <View style={styles.mqttControlsContainer}>
+            <TouchableOpacity 
+              style={[styles.mqttButton, styles.reconnectButton]}
+              onPress={handleReconnect}
+              disabled={connectionStatus === 'Connected'}
+            >
+              <Text style={styles.mqttButtonText}>Reconnect</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.mqttButton, styles.disconnectButton]}
+              onPress={handleDisconnect}
+              disabled={connectionStatus === 'Disconnected'}
+            >
+              <Text style={styles.mqttButtonText}>Disconnect</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.mqttButton, styles.testButton]}
+              onPress={testConnection}
+              disabled={connectionStatus !== 'Connected'}
+            >
+              <Text style={styles.mqttButtonText}>Test</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity 
+            style={styles.mqttTestScreenButton}
+            onPress={() => navigation.navigate('MQTTTestScreen')}
+          >
+            <Text style={styles.mqttTestScreenButtonText}>Open MQTT Debug Screen</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.riceCookerContainer}>
@@ -154,8 +241,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   connectionStatusContainer: {
-    flexDirection: 'row',  // Ensure text and circle are aligned in the same line
-    alignItems: 'center',  // Align them vertically in the middle
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   connectionStatus: {
     fontSize: 18,
@@ -171,13 +259,51 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 50,
-    marginLeft: 5,  // Minimal space between the text and circle
+    marginLeft: 5,
   },
   connectedCircle: {
     backgroundColor: 'green',
   },
   disconnectedCircle: {
     backgroundColor: 'red',
+  },
+  mqttControlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  mqttButton: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    marginHorizontal: 2,
+    alignItems: 'center',
+  },
+  reconnectButton: {
+    backgroundColor: '#178ea3',
+  },
+  disconnectButton: {
+    backgroundColor: '#dc3545',
+  },
+  testButton: {
+    backgroundColor: '#28a745',
+  },
+  mqttButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  mqttTestScreenButton: {
+    backgroundColor: '#6c757d',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  mqttTestScreenButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   riceCookerContainer: {
     alignItems: 'center',
