@@ -656,7 +656,7 @@
 
 // export default StartCooking;
 
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import {
   View,
   Text,
@@ -670,39 +670,131 @@ import {
 import axios from 'axios';
 import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
+import { connectMQTT, sendCommand } from '../utils/mqttClient';
+
+// const StartCooking = ({ navigation }) => {
+//   const [selectedQuantity, setSelectedQuantity] = useState('1 Cup');
+
+//   const getEstimatedTime = (quantity) => {
+//     switch(quantity) {
+//       case '1 Cup': return '30min';
+//       case '1.5 Cup': return '45min';
+//       case '2 Cup': return '55min';
+//       default: return '30min';
+//     }
+//   };
+
+//   const toggleQuantity = () => {
+//     switch(selectedQuantity) {
+//       case '1 Cup': return '1.5 Cup';
+//       case '1.5 Cup': return '2 Cup';
+//       case '2 Cup': return '1 Cup';
+//       default: return '1 Cup';
+//     }
+//   };
+
+//   const handleStartCooking = async () => {
+//     let rice_quantity = 1;
+//     if (selectedQuantity === '1.5 Cup') rice_quantity = 2;
+//     if (selectedQuantity === '2 Cup') rice_quantity = 5;
+
+//     const now = moment();
+//     const payload = {
+//       rice_quantity,
+//       day_of_week: now.isoWeekday(),  // 1 (Monday) to 7 (Sunday)
+//       month: now.month() + 1,         // 1-12
+//       meal_type_encoded: 1,           // you can change if you add meal types
+//     };
+
+//     console.log('📤 Sending to prediction backend:', payload);
+
+//     try {
+//       const response = await axios.post(
+//         'https://rice-cooker-back-end.onrender.com/prediction/predict',
+//         payload,
+//         { headers: { 'Content-Type': 'application/json' } }
+//       );
+
+//       console.log('✅ Prediction response:', response.data);
+
+//       const predictionData = response.data.prediction || {};
+//       const nextTime = predictionData.next_time_prediction;
+//       const cooked = predictionData.prediction; // 1 or 0
+
+//       if (cooked === 1) {
+//         Alert.alert('Prediction', `Likely to cook. Shall I start cooking ${rice_quantity} cups?`);
+//       } else {
+//         Alert.alert('Prediction', 'Probably no cooking expected now.');
+//       }
+
+//       if (nextTime) {
+//         const notifyTime = moment(nextTime, "YYYY-MM-DD HH:mm:ss");
+//         if (notifyTime.isValid() && notifyTime.isAfter(moment())) {
+//           PushNotification.localNotificationSchedule({
+//             channelId: "cooking-channel",
+//             message: `It's time to cook again! 🍚 (${selectedQuantity})`,
+//             date: notifyTime.toDate(),
+//             allowWhileIdle: true,
+//           });
+//           console.log('⏰ Scheduled notification at:', notifyTime.format("hh:mm A"));
+//         } else {
+//           console.log("⚠️ Invalid or past time, not scheduling notification.");
+//         }
+//       }
+
+//       navigation.navigate('CookingStatus', {
+//         predictionInfo: nextTime || "No future prediction available",
+//       });
+
+//     } catch (error) {
+//       console.error('❌ Prediction error:', error.response?.data || error.message || error);
+//       Alert.alert('Error', `Failed: ${JSON.stringify(error.response?.data || error.message)}`);
+//     }
+//   };
 
 const StartCooking = ({ navigation }) => {
   const [selectedQuantity, setSelectedQuantity] = useState('1 Cup');
 
+  useEffect(() => {
+    connectMQTT((topic, message) => {
+      if (topic === 'ricecooker/status' && message === 'done') {
+        PushNotification.localNotification({
+          channelId: 'cooking-channel',
+          message: '🍚 Rice is ready!',
+        });
+      }
+    });
+  }, []);
+
   const getEstimatedTime = (quantity) => {
     switch(quantity) {
       case '1 Cup': return '30min';
-      case '1.5 Cup': return '45min';
-      case '2 Cup': return '55min';
+      case '2 Cup': return '45min';
+      case '5 Cup': return '55min';
       default: return '30min';
     }
   };
 
   const toggleQuantity = () => {
     switch(selectedQuantity) {
-      case '1 Cup': return '1.5 Cup';
-      case '1.5 Cup': return '2 Cup';
-      case '2 Cup': return '1 Cup';
+      case '1 Cup': return '2 Cup';
+      case '2 Cup': return '5 Cup';
+      case '5 Cup': return '1 Cup';
       default: return '1 Cup';
     }
   };
 
   const handleStartCooking = async () => {
     let rice_quantity = 1;
-    if (selectedQuantity === '1.5 Cup') rice_quantity = 2;
-    if (selectedQuantity === '2 Cup') rice_quantity = 5;
+    if (selectedQuantity === '2 Cup') rice_quantity = 2;
+    if (selectedQuantity === '5 Cup') rice_quantity = 5;
 
     const now = moment();
     const payload = {
       rice_quantity,
-      day_of_week: now.isoWeekday(),  // 1 (Monday) to 7 (Sunday)
-      month: now.month() + 1,         // 1-12
-      meal_type_encoded: 1,           // you can change if you add meal types
+      day_of_week: now.isoWeekday(),
+      month: now.month() + 1,
+      meal_type_encoded: 1,
     };
 
     console.log('📤 Sending to prediction backend:', payload);
@@ -718,10 +810,11 @@ const StartCooking = ({ navigation }) => {
 
       const predictionData = response.data.prediction || {};
       const nextTime = predictionData.next_time_prediction;
-      const cooked = predictionData.prediction; // 1 or 0
+      const cooked = predictionData.prediction;
 
       if (cooked === 1) {
         Alert.alert('Prediction', `Likely to cook. Shall I start cooking ${rice_quantity} cups?`);
+        sendCommand('start'); // <-- IoT rice cooker start
       } else {
         Alert.alert('Prediction', 'Probably no cooking expected now.');
       }
@@ -736,8 +829,6 @@ const StartCooking = ({ navigation }) => {
             allowWhileIdle: true,
           });
           console.log('⏰ Scheduled notification at:', notifyTime.format("hh:mm A"));
-        } else {
-          console.log("⚠️ Invalid or past time, not scheduling notification.");
         }
       }
 
@@ -750,6 +841,9 @@ const StartCooking = ({ navigation }) => {
       Alert.alert('Error', `Failed: ${JSON.stringify(error.response?.data || error.message)}`);
     }
   };
+
+  // Your existing return UI stays the same
+
 
   return (
     <SafeAreaView style={styles.container}>
